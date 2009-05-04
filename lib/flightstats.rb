@@ -18,13 +18,16 @@ module FlightStats
   
   @base_url = "https://www.pathfinder-xml.com/development/xml"
   
+  # The base url for a request to FlightStats, includes the user id, account
+  # id and the password.
   def self.api_url
-    params = {'login.accountID' => FLIGHTSTATS_ACCOUNT_ID,
-              'login.userID' => FLIGHTSTATS_USER_ID,
-              'login.password' => FLIGHTSTATS_PASSWORD}
+    params = {'login.accountID' => FLIGHTSTATS_ACCOUNT_ID.to_s,
+              'login.userID' => FLIGHTSTATS_USER_ID.to_s,
+              'login.password' => FLIGHTSTATS_PASSWORD.to_s}
     @base_url + "?" + params.collect { |k, v| "#{k}=#{v}"}.join('&')
   end
   
+  # Sends a request to the Flightcaster server using the given params
   def self.query(params)
     url = api_url + "&" + params.collect { |k, v| "#{k.to_s}=#{v.to_s}"}.join('&')
     puts url
