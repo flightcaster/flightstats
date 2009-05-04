@@ -5,7 +5,7 @@ class FlightStats::MetarReport
                 :wind_speed, :variable_wind_direction, :visibility,
                 :visibility_less_than_stated, :temperature, :dew_point,
                 :barometric_pressure, :remark, :original_report,
-                :sky_conditions, :weather_conditions,
+                :sky_conditions, :weather_conditions, :weather_condition_id,
                 :runway_conditions
 
   alias :station_code :icao_code
@@ -61,7 +61,36 @@ class FlightStats::MetarReport
        :min_prefix => node.attributes['MinPrefix'],
        :varying_visibility => node.attributes['IsVarying'] == 'true'}
     end
-
+    
+    def calculate_condition_id(conditions)
+      case conditions
+      when /hurricane/i; 22
+      when /(tornado|funnel\scloud)/i; 21
+      when /(volcanic\sash|volcanic)/i; 20
+      when /(ice|freezing|hail)/i; 19
+      when /thunderstorm/i; 18
+      when /(snow|flurr)/i; 17
+      when /(sandstorm|duststorm)/i; 16
+      when /(shallow|partial|patches)\s(fog|mistj)/i; 13
+      when /(fog|mist)/i; 15
+      when /smoke/i; 14
+      when /light\sblowing/i; 11
+      when /blowing/i; 12
+      when /chance\sof\s(rain|percipatation)\s[56789][0123456789]\sprecent/i; 9
+      when /(chance\sof\s(rain|percipatation)|shower|drizzle)/i; 8
+      when /chance\sof\s(rain|percipatation)\s[01234][0123456789]\sprecent/i; 7
+      when /(rain|heavy\sdrizzle|heavy\sshowers)/; 10
+      when /(few\sclouds|scattered\slayer|broken\slayer)/i; 5
+      when /(clouds|cloudy|overcast\slayer|sky\scover\sis)/i; 6
+      when /smog/i; 4
+      when /(dry|fair|mostly\sclear|partly\sclear)/i; 3
+      when /clear/; 2
+      when /partly\ssunny/i; 1
+      when /sunny/; 0
+      else; 0
+      end
+    end
+    
   end
 
   def initialize(attributes=nil)
@@ -74,12 +103,16 @@ class FlightStats::MetarReport
       end
     end
     result = yield self if block_given?
-  end  
+    @weather_condition_id = FlightStats::MetarReport::calculate_condition_id(@weather_conditions.join)
+    if @weather_condition_id == 0
+      @weather_condition_id = FlightStats::MetarReport::calculate_condition_id(@sky_conditions.join)
+    end
+  end
 
   private
 
     def self.fetch_from_flightstats(params)
       parse(FlightStats.query(params))    
     end
-    
+
 end
