@@ -2,7 +2,7 @@
 
 	require 'flightstats'
 	
-	FLIGHTSTATS_ACCOUNT_ID 	= 'my_id'
+	FLIGHTSTATS_ACCOUNT_ID	= 'my_id'
 	FLIGHTSTATS_USER_ID 	= "12345"
 	FLIGHTSTATS_PASSWORD 	= "*****"
 	
