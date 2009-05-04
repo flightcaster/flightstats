@@ -1,13 +1,11 @@
-= Usage
-
-	require 'flightstats'
-	
-	FLIGHTSTATS_ACCOUNT_ID	= 'my_id'
-	FLIGHTSTATS_USER_ID 	= "12345"
-	FLIGHTSTATS_PASSWORD 	= "*****"
-	
-	# Displays the flight numbers of all the arriving flights
-	boston = FlightStats.find_by_icao_code("KBOS")
-	boston.arrivals.each do |flight|
-		puts flight.number
-	end
+###########################################
+#
+# © Copyright FlightCaster 2009
+#
+# Provides an API interface for FlightStats
+#
+# Overview of services available at 
+# https://www.flightstats.com/developers/bin/view/Web+Services/web_services_directory
+#
+#
+###########################################

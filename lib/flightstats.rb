@@ -2,6 +2,7 @@ require 'rubygems'
 require 'libxml'
 require 'open-uri'
 require 'openssl'
+OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 
 class String
   def underscore
@@ -53,4 +54,3 @@ require 'flightstats/airport/delay/general_departure_delay'
 require 'flightstats/airport/delay/general_arrival_delay'
 require 'flightstats/airport/delay/ground_delay'
 require 'flightstats/airport/delay/ground_stop_delay'
-
