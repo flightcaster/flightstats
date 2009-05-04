@@ -47,7 +47,7 @@ require 'flightstats/airport/delay/general_arrival_delay'
 require 'flightstats/airport/delay/ground_delay'
 require 'flightstats/airport/delay/ground_stop_delay'
 
-# __END__
+__END__
 
 FLIGHTSTATS_ACCOUNT_ID = "3912"
 FLIGHTSTATS_USER_ID = "jaf12duke"
