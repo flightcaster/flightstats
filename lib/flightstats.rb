@@ -2,6 +2,7 @@ require 'rubygems'
 require 'libxml'
 require 'open-uri'
 require 'openssl'
+OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 
 class String
   def underscore
@@ -46,17 +47,3 @@ require 'flightstats/airport/delay/general_departure_delay'
 require 'flightstats/airport/delay/general_arrival_delay'
 require 'flightstats/airport/delay/ground_delay'
 require 'flightstats/airport/delay/ground_stop_delay'
-
-__END__
-
-FLIGHTSTATS_ACCOUNT_ID = "3912"
-FLIGHTSTATS_USER_ID = "jaf12duke"
-FLIGHTSTATS_PASSWORD = "90829082"
-OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
-
-
-# a = FlightStats::WeatherReport.find_by_zone("ORZ006")
-a = FlightStats::Airport.find_by_icao_code("KBOS")
-puts a.departures_and_arrivals.size
-# puts a.zone, a.date, a.cities, a.counties, a.forecast, a.estimates,
-#      a.general_information, a.header

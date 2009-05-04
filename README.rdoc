@@ -1,0 +1,11 @@
+###########################################
+#
+# © Copyright FlightCaster 2009
+#
+# Provides an API interface for FlightStats
+#
+# Overview of services available at 
+# https://www.flightstats.com/developers/bin/view/Web+Services/web_services_directory
+#
+#
+###########################################
