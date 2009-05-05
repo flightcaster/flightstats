@@ -12,7 +12,8 @@ class FlightStats::WeatherReport
     end
     
     def parse(xml)
-      node = (xml.class == LibXML::XML::Node ? xml : xml.root.child)
+      node = xml.class == LibXML::XML::Node ? xml : xml.root.child
+      return nil if node == nil
       
       FlightStats::WeatherReport.new do |report|
         report.date = DateTime.parse(node.attributes['Date'])

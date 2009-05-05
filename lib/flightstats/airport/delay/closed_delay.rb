@@ -6,6 +6,7 @@ class FlightStats::Airport::ClosedDelay < FlightStats::Airport::Delay
     
     def parse(xml)
       node = xml.class == LibXML::XML::Node ? xml : xml.root.child
+      return nil if node == nil
       
       FlightStats::Airport::ClosedDelay.new do |a|
         a.description = node.attributes['Description']
