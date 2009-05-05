@@ -46,7 +46,7 @@ class FlightStats::MetarReport
           when 'OriginalReport' then a.original_report = child.content.strip
           when 'SkyCondition' then a.sky_conditions << child.content.strip
           when 'PresentWeatherCondition' then a.weather_conditions << child.content.strip
-          when 'RunwayGroup' then a.runway_conditions << parse_runway_condition_xml(e)
+          when 'RunwayGroup' then a.runway_conditions << parse_runway_conditions(child)
           end
         end
         
