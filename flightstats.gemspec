@@ -6,21 +6,33 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 1.2") if s.respond_to? :required_rubygems_version=
   s.authors = ["James Bracy, Jon Bracy"]
-  s.date = %q{2009-05-04}
-  s.description = %q{###########################################
-#
-# © Copyright FlightCaster 2009
-#
-# Provides an API interface for FlightStats
-#
-# Overview of services available at 
-# https://www.flightstats.com/developers/bin/view/Web+Services/web_services_directory
-#
-#
-###########################################}
+  s.date = %q{2009-05-05}
+  s.description = %q{= Copyright
+
+  Copyright (c) FlightCaster 2009
+  
+= Description
+
+  FlightStats is a gem that provides a wraper over the FlightStats Web Services
+  API, specifed at https://www.flightstats.com/developers/bin/view/Web+Services/web_services_directory
+
+= Usage
+
+	require 'flightstats'
+	
+	FLIGHTSTATS_ACCOUNT_ID 	= 'my_id'
+	FLIGHTSTATS_USER_ID 	= "12345"
+	FLIGHTSTATS_PASSWORD 	= "*****"
+	
+	# Displays the flight numbers of all the arriving flights
+	boston = FlightStats.find_by_icao_code("KBOS")
+	boston.arrivals.each do |flight|
+		puts flight.number
+	end
+}
   s.email = %q{crew@flightcaster.com}
   s.extra_rdoc_files = ["lib/flightstats/airline.rb", "lib/flightstats/airport/delay/closed_delay.rb", "lib/flightstats/airport/delay/general_arrival_delay.rb", "lib/flightstats/airport/delay/general_delay.rb", "lib/flightstats/airport/delay/general_departure_delay.rb", "lib/flightstats/airport/delay/ground_delay.rb", "lib/flightstats/airport/delay/ground_stop_delay.rb", "lib/flightstats/airport/delay.rb", "lib/flightstats/airport.rb", "lib/flightstats/flight.rb", "lib/flightstats/metar_report.rb", "lib/flightstats/weather_report.rb", "lib/flightstats.rb", "README.rdoc"]
-  s.files = ["lib/flightstats/airline.rb", "lib/flightstats/airport/delay/closed_delay.rb", "lib/flightstats/airport/delay/general_arrival_delay.rb", "lib/flightstats/airport/delay/general_delay.rb", "lib/flightstats/airport/delay/general_departure_delay.rb", "lib/flightstats/airport/delay/ground_delay.rb", "lib/flightstats/airport/delay/ground_stop_delay.rb", "lib/flightstats/airport/delay.rb", "lib/flightstats/airport.rb", "lib/flightstats/flight.rb", "lib/flightstats/metar_report.rb", "lib/flightstats/weather_report.rb", "lib/flightstats.rb", "Manifest", "Rakefile", "README.rdoc", "flightstats.gemspec"]
+  s.files = ["flightstats.gemspec", "lib/flightstats/airline.rb", "lib/flightstats/airport/delay/closed_delay.rb", "lib/flightstats/airport/delay/general_arrival_delay.rb", "lib/flightstats/airport/delay/general_delay.rb", "lib/flightstats/airport/delay/general_departure_delay.rb", "lib/flightstats/airport/delay/ground_delay.rb", "lib/flightstats/airport/delay/ground_stop_delay.rb", "lib/flightstats/airport/delay.rb", "lib/flightstats/airport.rb", "lib/flightstats/flight.rb", "lib/flightstats/metar_report.rb", "lib/flightstats/weather_report.rb", "lib/flightstats.rb", "Rakefile", "README.rdoc", "Manifest"]
   s.has_rdoc = true
   s.homepage = %q{http://github.com/flightcaster/flightstats}
   s.rdoc_options = ["--line-numbers", "--inline-source", "--title", "Flightstats", "--main", "README.rdoc"]

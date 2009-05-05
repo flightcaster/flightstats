@@ -2,7 +2,7 @@ class FlightStats::Flight
   
   attr_accessor :airline_icao_code, :number, :departure_date, :arrival_date,
                 :history_id, :status, :status_code, :creator_code,
-                :departure_code, :departure_terminal, :arrival_gate,
+                :departure_gate, :departure_terminal, :arrival_gate,
                 :arrival_terminal, :baggage_claim, :tail_number, :codeshares,
                 :published_departure_date, :published_arrival_date,
                 :scheduled_gate_departure, :scheduled_gate_arrival,
@@ -54,7 +54,7 @@ class FlightStats::Flight
           case key
           when 'FlightNumber'
             f.number = value.to_i
-          when /date/i, /(estimated|scheduled).+(departure|arrival)/i #/.+(date|(estimated|scheduled).+(departure|arrival)|).+/
+          when /date/i, /(estimated|scheduled).+(departure|arrival)/i
             f.instance_variable_set('@' + key.underscore, DateTime.parse(value))
           when /number/, /air_time/, /block_time/
             f.instance_variable_set('@' + key.underscore, value.to_i)
@@ -115,7 +115,7 @@ class FlightStats::Flight
       :status => status,
       :status_code => status_code,
       :creator_code => creator_code,
-      :departure_code => departure_code,
+      :departure_gate => departure_gate,
       :departure_terminal => departure_terminal,
       :arrival_gate => arrival_gate,
       :arrival_terminal => arrival_terminal,

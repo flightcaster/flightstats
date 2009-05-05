@@ -110,7 +110,7 @@ class FlightStats::Airport
   end
   
   def to_h
-    { :flightstats_code = flightstats_code, 
+    { :flightstats_code => flightstats_code, 
       :iata_code => iata_code,
       :icao_code => icao_code,
       :faa_code => faa_code,
