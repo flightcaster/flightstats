@@ -109,6 +109,26 @@ class FlightStats::Airport
     flights
   end
   
+  def to_h
+    { :flightstats_code = flightstats_code, 
+      :iata_code => iata_code,
+      :icao_code => icao_code,
+      :faa_code => faa_code,
+      :name => name,
+      :street => street,
+      :city => city,
+      :state => state,
+      :postal_code => postal_code,
+      :country => country,
+      :latitude => latitude,
+      :longitude => longitude,
+      :hub => hub,
+      :weather_station_code => weather_station_code,
+      :weather_zone => weather_zone,
+      :timezone_offset => timezone_offset
+    }
+  end
+  
   private
 
     def self.fetch_from_flightstats(params)

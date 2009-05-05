@@ -105,7 +105,51 @@ class FlightStats::Flight
     end
     result = yield self if block_given?
   end  
-   
+  
+  def to_h
+    { :airline_icao_code => airline_icao_code,
+      :number => number,
+      :departure_date => departure_date,
+      :arrival_date => arrival_date,
+      :history_id => history_id,
+      :status => status,
+      :status_code => status_code,
+      :creator_code => creator_code,
+      :departure_code => departure_code,
+      :departure_terminal => departure_terminal,
+      :arrival_gate => arrival_gate,
+      :arrival_terminal => arrival_terminal,
+      :baggage_claim => baggage_claim,
+      :tail_number => tail_number,
+      :codeshares => codeshares,
+      :published_departure_date => published_departure_date,
+      :published_arrival_date => published_arrival_date,
+      :scheduled_gate_departure => scheduled_gate_departure,
+      :scheduled_gate_arrival => scheduled_gate_arrival,
+      :scheduled_runway_departure => scheduled_runway_departure,
+      :scheduled_runway_arrival => scheduled_runway_arrival,
+      :scheduled_air_time => scheduled_air_time,
+      :scheduled_block_time => scheduled_block_time,
+      :scheduled_aircraft_type => scheduled_aircraft_type,
+      :estimated_gate_departure => estimated_gate_departure,
+      :estimated_gate_arrival => estimated_gate_arrival,
+      :estimated_runway_departure => estimated_runway_departure, 
+      :estimated_runway_arrival => estimated_runway_arrival,
+      :actual_gate_departure => actual_gate_departure,
+      :actual_gate_arrival => actual_gate_arrival,
+      :actual_runway_departure => actual_runway_departure,
+      :actual_runway_arrival => actual_runway_arrival,
+      :actual_air_time => actual_air_time,
+      :actual_block_time => actual_block_time,
+      :actual_aircraft_type => actual_aircraft_type,
+      :airline_icao_code => airline_icao_code,
+      :origin_icao_code => origin_icao_code, 
+      :destination_icao_code => destination_icao_code,
+      :diverted_icao_code => diverted_icao_code
+    }
+  end
+  
+  
   private
   
     def self.fetch_from_flightstats(params)
