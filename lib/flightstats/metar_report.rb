@@ -109,6 +109,31 @@ class FlightStats::MetarReport
       @weather_condition_id = FlightStats::MetarReport::calculate_condition_id(@sky_conditions.join)
     end
   end
+  
+  def to_h
+    { :icao_code => icao_code,
+      :issue_date => issue_date,
+      :altitude => altitude,
+      :type => type,
+      :modifier => modifier,
+      :wind_direction_varying => wind_direction_varying,
+      :wind_direction => wind_direction,
+      :wind_gusts => wind_gusts,
+      :wind_speed => wind_speed,
+      :variable_wind_direction => variable_wind_direction,
+      :visibility => visibility,
+      :visibility_less_than_stated => visibility_less_than_stated,
+      :temperature => temperature,
+      :dew_point => dew_point,
+      :barometric_pressure => barometric_pressure,
+      :remark => remark,
+      :original_report => original_report,
+      :sky_conditions => sky_conditions,
+      :weather_conditions => weather_conditions,
+      :weather_condition_id => weather_condition_id,
+      :runway_conditions => runway_conditions
+    }
+  end
 
   private
 
