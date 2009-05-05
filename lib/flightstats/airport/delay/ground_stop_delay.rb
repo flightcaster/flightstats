@@ -6,6 +6,7 @@ class FlightStats::Airport::GroundStopDelay < FlightStats::Airport::Delay
 
     def parse(xml)
       node = xml.class == LibXML::XML::Node ? xml : xml.root.child
+      return nil if node == nil
 
       FlightStats::Airport::GroundStopDelay.new do |a|
         a.airport_icao = airport_icao

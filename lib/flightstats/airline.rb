@@ -12,6 +12,7 @@ class FlightStats::Airline
     
     def parse(xml)
       node = xml.class == LibXML::XML::Node ? xml : xml.root.child
+      return nil if node == nil
       
       FlightStats::Airline.new do |a|
         a.iata_code = node.attributes['IATACode']
@@ -34,7 +35,7 @@ class FlightStats::Airline
   end
   
   def to_h
-    {:flightstats_code = flightstats_code,
+    {:flightstats_code => flightstats_code,
       :iata_code => iata_code,
       :icao_code => icao_code,
       :faa_code => faa_code,

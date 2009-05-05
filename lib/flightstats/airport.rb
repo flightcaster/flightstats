@@ -20,7 +20,8 @@ class FlightStats::Airport
     end
     
     def parse(xml)
-      node = (xml.class == LibXML::XML::Node ? xml : xml.root.child)
+      node = xml.class == LibXML::XML::Node ? xml : xml.root.child
+      return nil if node == nil
 
       FlightStats::Airport.new do |a|
         a.iata_code = node.attributes['IATACode']
