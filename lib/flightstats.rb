@@ -33,7 +33,6 @@ module FlightStats
     # Sends a request to the Flightcaster server using the given params
     def query(params)
       url = api_url + "&" + params.collect { |k, v| "#{k.to_s}=#{v.to_s}"}.join('&')
-      puts url
       LibXML::XML::Parser.io(open(url)).parse
     end
     
