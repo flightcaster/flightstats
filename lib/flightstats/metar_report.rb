@@ -24,10 +24,10 @@ class FlightStats::MetarReport
       return nil if node == nil
 
       FlightStats::MetarReport.new do |a|
-        a.icao_code = node.attributes['ICAOCode']
+        a.icao_code = node.attributes['Station']
         a.altitude = node.attributes['Altimeter'].to_f
         a.issue_date = DateTime.parse(node.attributes['IssueDate'])
-        a.type = (['A01','A02'].include?(node.attributes['StationType']) ? node.attributes['StationType'] : nil)
+        a.type = (['AO1','AO2'].include?(node.attributes['StationType']) ? node.attributes['StationType'] : nil)
         a.modifier = node.attributes['ReportModifier']
         a.wind_direction = node.attributes['WindDirection'].to_i
         a.wind_direction_varying = (node.attributes['IsWindDirectionVariable'] == 'true')
