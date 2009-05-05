@@ -19,6 +19,36 @@ class FlightStats::Airport
       fetch_from_flightstats(params)
     end
     
+    def arrivals(code, depatring_date=nil)
+      depatring_date ||= Date.today
+      flights = []
+
+      params = {'Service' => 'FlightHistoryGetRecordsService',
+                'info.specificationArrivals[0].airport.icaoCode' => code.upcase,
+                'info.specificationDateRange.departureDateTimeMin' => "#{depatring_date.strftime('%Y-%m-%d')}T00:00",
+                'info.specificationDateRange.departureDateTimeMax' => "#{depatring_date.strftime('%Y-%m-%d')}T24:00"}
+      xml_doc = FlightStats.query(params)
+      xml_doc.root.children.each do |child|
+        flights << FlightStats::Flight.parse(child)
+      end
+      flights
+    end
+
+    def departures(code, depatring_date=nil)
+      depatring_date ||= Date.today
+      flights = []
+
+      params = {'Service' => 'FlightHistoryGetRecordsService',
+                'info.specificationDepartures[0].airport.icaoCode' => code.upcase,
+                'info.specificationDateRange.departureDateTimeMin' => "#{depatring_date.strftime('%Y-%m-%d')}T00:00",
+                'info.specificationDateRange.departureDateTimeMax' => "#{depatring_date.strftime('%Y-%m-%d')}T24:00"}
+      xml_doc = FlightStats.query(params)
+      xml_doc.root.children.each do |child|
+        flights << FlightStats::Flight.parse(child)
+      end
+      flights
+    end
+    
     def parse(xml)
       node = xml.class == LibXML::XML::Node ? xml : xml.root.child
       return nil if node == nil
@@ -65,6 +95,14 @@ class FlightStats::Airport
     
   end
   
+  def arrivals(code, depatring_date=nil)
+    FlightStats::Airport.arrivals(icao_code, depatring_date)
+  end
+  
+  def departures(code, depatring_date=nil)
+    FlightStats::Airport.departures(icao_code, depatring_date)
+  end
+  
   def initialize(attributes=nil)
     @closed_delays = Array.new
     @general_arrival_delays = Array.new
@@ -78,36 +116,6 @@ class FlightStats::Airport
     end
     result = yield self if block_given?
   end  
-  
-  def arrivals(depatring_date=nil)
-    depatring_date ||= Date.today
-    flights = []
-    
-    params = {'Service' => 'FlightHistoryGetRecordsService',
-              'info.specificationArrivals[0].airport.icaoCode' => icao_code.upcase,
-              'info.specificationDateRange.departureDateTimeMin' => "#{depatring_date.strftime('%Y-%m-%d')}T00:00",
-              'info.specificationDateRange.departureDateTimeMax' => "#{depatring_date.strftime('%Y-%m-%d')}T24:00"}
-    xml_doc = FlightStats.query(params)
-    xml_doc.root.children.each do |child|
-      flights << FlightStats::Flight.parse(child)
-    end
-    flights
-  end
-  
-  def departures(depatring_date=nil)
-    depatring_date ||= Date.today
-    flights = []
-    
-    params = {'Service' => 'FlightHistoryGetRecordsService',
-              'info.specificationDepartures[0].airport.icaoCode' => icao_code.upcase,
-              'info.specificationDateRange.departureDateTimeMin' => "#{depatring_date.strftime('%Y-%m-%d')}T00:00",
-              'info.specificationDateRange.departureDateTimeMax' => "#{depatring_date.strftime('%Y-%m-%d')}T24:00"}
-    xml_doc = FlightStats.query(params)
-    xml_doc.root.children.each do |child|
-      flights << FlightStats::Flight.parse(child)
-    end
-    flights
-  end
   
   def to_h
     { :flightstats_code => flightstats_code, 
