@@ -45,7 +45,16 @@ class FlightStats::WeatherReport
     end
     result = yield self if block_given?
   end  
+  
+  def to_h
+    { :zone => zone, :date => date, 
+      :cities => cities, :counties => counties,
+      :forecast => forecast, :estimates => estimates,
+      :general_information => general_information,
+      :header => header }    
+  end 
    
+  
   private
   
     def self.fetch_from_flightstats(params)
