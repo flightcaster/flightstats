@@ -19,17 +19,24 @@ module FlightStats
   
   @base_url = "https://www.pathfinder-xml.com/development/xml"
   
-  def self.api_url
-    params = {'login.accountID' => FLIGHTSTATS_ACCOUNT_ID,
-              'login.userID' => FLIGHTSTATS_USER_ID,
-              'login.password' => FLIGHTSTATS_PASSWORD}
-    @base_url + "?" + params.collect { |k, v| "#{k}=#{v}"}.join('&')
-  end
-  
-  def self.query(params)
-    url = api_url + "&" + params.collect { |k, v| "#{k.to_s}=#{v.to_s}"}.join('&')
-    puts url
-    LibXML::XML::Parser.io(open(url)).parse
+  class << self
+    
+    # The base url for a request to FlightStats, includes the user id, account
+    # id and the password.
+    def api_url
+      params = {'login.accountID' => FLIGHTSTATS_ACCOUNT_ID.to_s,
+                'login.userID' => FLIGHTSTATS_USER_ID.to_s,
+                'login.password' => FLIGHTSTATS_PASSWORD.to_s}
+      @base_url + "?" + params.collect { |k, v| "#{k}=#{v}"}.join('&')
+    end
+
+    # Sends a request to the Flightcaster server using the given params
+    def query(params)
+      url = api_url + "&" + params.collect { |k, v| "#{k.to_s}=#{v.to_s}"}.join('&')
+      puts url
+      LibXML::XML::Parser.io(open(url)).parse
+    end
+    
   end
   
 end

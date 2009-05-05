@@ -31,7 +31,16 @@ class FlightStats::Airline
       end
     end
     result = yield self if block_given?
-  end  
+  end
+  
+  def to_h
+    {:flightstats_code = flightstats_code,
+      :iata_code => iata_code,
+      :icao_code => icao_code,
+      :faa_code => faa_code,
+      :name => name}
+  end
+  alias to_hash to_h
    
   private
   
