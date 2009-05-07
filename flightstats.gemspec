@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 1.2") if s.respond_to? :required_rubygems_version=
   s.authors = ["James Bracy, Jon Bracy"]
-  s.date = %q{2009-05-05}
+  s.date = %q{2009-05-06}
   s.description = %q{= Copyright
 
   Copyright (c) FlightCaster 2009

@@ -26,7 +26,8 @@ class FlightStats::Airport
       params = {'Service' => 'FlightHistoryGetRecordsService',
                 'info.specificationArrivals[0].airport.icaoCode' => code.upcase,
                 'info.specificationDateRange.arrivalDateTimeMin' => "#{depatring_date.strftime('%Y-%m-%d')}T00:00",
-                'info.specificationDateRange.arrivalDateTimeMax' => "#{depatring_date.strftime('%Y-%m-%d')}T24:00"}
+                'info.specificationDateRange.arrivalDateTimeMax' => "#{depatring_date.strftime('%Y-%m-%d')}T24:00",
+                'info.specificationFlights[0].searchCodeshares' => 'false'}
       xml_doc = FlightStats.query(params)
       xml_doc.root.children.each do |child|
         flights << FlightStats::Flight.parse(child)
@@ -41,7 +42,8 @@ class FlightStats::Airport
       params = {'Service' => 'FlightHistoryGetRecordsService',
                 'info.specificationDepartures[0].airport.icaoCode' => code.upcase,
                 'info.specificationDateRange.departureDateTimeMin' => "#{depatring_date.strftime('%Y-%m-%d')}T00:00",
-                'info.specificationDateRange.departureDateTimeMax' => "#{depatring_date.strftime('%Y-%m-%d')}T24:00"}
+                'info.specificationDateRange.departureDateTimeMax' => "#{depatring_date.strftime('%Y-%m-%d')}T24:00",
+                'info.specificationFlights[0].searchCodeshares' => 'false'}
       xml_doc = FlightStats.query(params)
       xml_doc.root.children.each do |child|
         flights << FlightStats::Flight.parse(child)
