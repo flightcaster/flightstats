@@ -1,22 +1,35 @@
 class FlightStats::Flight
   
-  attr_accessor :airline_icao_code, :number, :departure_date, :arrival_date,
-                :history_id, :status, :status_code, :creator_code,
-                :departure_gate, :departure_terminal, :arrival_gate,
-                :arrival_terminal, :baggage_claim, :tail_number, :codeshares,
-                :published_departure_date, :published_arrival_date,
-                :scheduled_gate_departure, :scheduled_gate_arrival,
-                :scheduled_runway_departure, :scheduled_runway_arrival,
-                :scheduled_air_time, :scheduled_block_time,
-                :scheduled_aircraft_type, :estimated_gate_departure, 
-                :estimated_gate_arrival, :estimated_runway_departure, 
-                :estimated_runway_arrival, :actual_gate_departure,
-                :actual_gate_arrival, :actual_runway_departure,
-                :actual_runway_arrival, :actual_air_time, :actual_block_time,
-                :actual_aircraft_type, :airline_icao_code, :origin_icao_code, 
-                :destination_icao_code, :diverted_icao_code
+  AGGREGATE_PARAMS = {
+    'info.flightHistoryGetRecordsRequestedData.aggregatedAirports' => 'true',
+    'info.specificationFlights[0].searchCodeshares' => 'true'
+  }
   
-  attr_accessor :origin_airport, :destination_airport, :diverted_airport, :airline
+  QUERY_OPTIONS = {
+    :departure_date_min => 'info.specificationDateRange.departureDateTimeMin',
+    :departure_date_max => 'info.specificationDateRange.departureDateTimeMax',
+    :icao_code => 'info.specificationFlights[0].airline.icaoCode',
+    :flight_number => 'info.specificationFlights[0].flightNumber'
+  }
+  
+  QUERY_PARAMS = { 'Service' => 'FlightHistoryGetRecordsService' }
+  
+  attr_accessor :attributes
+  attr_accessor :codeshares, :origin_airport, :destination_airport,
+                :diverted_airport, :airline
+  
+  def initialize(attributes_or_xml=nil)
+    @codeshares = []
+    case attributes_or_xml
+    when LibXML::XML::Document, LibXML::XML::Node
+      parse_flightstats_xml(attributes_or_xml)
+    when Hash
+      @attributes = attributes_or_xml.class
+    else
+      @attributes = Hash.new
+    end
+    result = yield self if block_given?
+  end
   
   def origin_airport
     @origin_airport ||= FlightCaster::Airport.find_by_icao_code(:origin_icao_code)
@@ -31,135 +44,67 @@ class FlightStats::Flight
   end
   
   class << self
-  
-    def find(airline_icao_code, flight_number, depatring_date=nil)
-      departing_date ||= Date.today
-      params = { 'Service' => 'FlightHistoryGetRecordsService',
-            'info.specificationFlights[0].searchCodeshares' => 'true',
-            'info.flightHistoryGetRecordsRequestedData.aggregatedAirports' => 'true',
-            'info.specificationDateRange.departureDateTimeMin' => "#{depatring_date.strftime('%Y-%m-%d')}T00:00",
-            'info.specificationDateRange.departureDateTimeMax' => "#{depatring_date.strftime('%Y-%m-%d')}T24:00",
-            'info.specificationFlights[0].airline.icaoCode' => airline_icao_code.upcase,
-            'info.specificationFlights[0].flightNumber' => flight_number }
-      fetch_from_flightstats(params)
-    end
     
-    def parse(xml)
-      node = xml.class == LibXML::XML::Node ? xml : xml.root.child
-      return nil if node == nil
-      
-      FlightStats::Flight.new do |f|
-        
-        node.attributes.to_h.each_pair do |key, value|
-          case key
-          when 'FlightNumber'
-            f.number = value.to_i
-          when /date/i, /(estimated|scheduled).+(departure|arrival)/i
-            f.instance_variable_set('@' + key.underscore, DateTime.parse(value))
-          when /number/, /air_time/, /block_time/
-            f.instance_variable_set('@' + key.underscore, value.to_i)
-          else
-            f.instance_variable_set('@' + key.underscore, value)
-          end
-        end
-        
-        node.children.each do |e|
-          case e.name
-          when 'FlightHistoryCodeshare' then f.codeshares << parse_code_share(e)
-          when 'Airline' 
-            f.airline_icao_code = e.attributes['ICAOCode']
-            f.airline = FlightStats::Airline.parse(e)
-          when 'Origin' then f.origin_icao_code = e.attributes['ICAOCode']
-          when 'Destination' then f.destination_icao_code = e.attributes['ICAOCode']
-          when 'Diverted' then f.diverted_icao_code = e.attributes['ICAOCode']
-          end
-        end
-        
-        node.children[1..-1].each do |e|
-          if e.name == "AggregatedAirport"
-            port = FlightStats::Airport.parse(e)
-            if port.icao_code == f.destination_icao_code
-              port.timezone_offset = node.attributes['ArrivalAirportTimeZoneOffset']
-              f.destination_airport = port
-            elsif port.icao_code == f.origin_icao_code
-              port.timezone_offset = node.attributes['DepartureAirportTimeZoneOffset']
-              f.origin_airport = port
-            elsif port.icao_code == f.diverted_icao_code
-              port.timezone_offset = node.attributes['DivertedAirportTimeZoneOffset']
-              f.diverted_airport = port
-            end
-          end
-        end
-          
-      end
+    def get(airline_icao_code, flight_number, depatring_date=nil)
+      depatring_date ||= Date.today
+      params = { QUERY_OPTIONS[:departure_date_min] => "#{depatring_date.strftime('%Y-%m-%d')}T00:00",
+        QUERY_OPTIONS[:departure_date_max] => "#{depatring_date.strftime('%Y-%m-%d')}T24:00",
+        QUERY_OPTIONS[:icao_code] => airline_icao_code.upcase,
+        QUERY_OPTIONS[:flight_number] => flight_number }.merge(QUERY_PARAMS)
+      FlightStats::Flight.new(FlightStats.query(params))
     end
     
   end
   
-  def initialize(attributes=nil)
-    @codeshares = []
-    if attributes
-      attributes.each_pair do |key, value|
-        instance_variable_set(('@' + key.to_s).to_sym.to_s,value)
+  def parse_flightstats_xml(xml)
+    node = (xml.class == LibXML::XML::Node ? xml : xml.root.child)
+    return nil if node == nil
+    
+    @attributes = node.attributes.to_h.underscore_keys
+    
+    @attributes.each_pair do |key, value|
+      case key
+      when 'flight_number', /number/, /air_time/, /block_time/
+        @attributes[key] = value.to_i
+      when /date/i, /(estimated|scheduled).+(departure|arrival)/i
+        @attributes[key] = DateTime.parse(value)
       end
     end
-    result = yield self if block_given?
-  end  
-  
-  def to_h
-    { :airline_icao_code => airline_icao_code,
-      :number => number,
-      :departure_date => departure_date,
-      :arrival_date => arrival_date,
-      :history_id => history_id,
-      :status => status,
-      :status_code => status_code,
-      :creator_code => creator_code,
-      :departure_gate => departure_gate,
-      :departure_terminal => departure_terminal,
-      :arrival_gate => arrival_gate,
-      :arrival_terminal => arrival_terminal,
-      :baggage_claim => baggage_claim,
-      :tail_number => tail_number,
-      :codeshares => codeshares,
-      :published_departure_date => published_departure_date,
-      :published_arrival_date => published_arrival_date,
-      :scheduled_gate_departure => scheduled_gate_departure,
-      :scheduled_gate_arrival => scheduled_gate_arrival,
-      :scheduled_runway_departure => scheduled_runway_departure,
-      :scheduled_runway_arrival => scheduled_runway_arrival,
-      :scheduled_air_time => scheduled_air_time,
-      :scheduled_block_time => scheduled_block_time,
-      :scheduled_aircraft_type => scheduled_aircraft_type,
-      :estimated_gate_departure => estimated_gate_departure,
-      :estimated_gate_arrival => estimated_gate_arrival,
-      :estimated_runway_departure => estimated_runway_departure, 
-      :estimated_runway_arrival => estimated_runway_arrival,
-      :actual_gate_departure => actual_gate_departure,
-      :actual_gate_arrival => actual_gate_arrival,
-      :actual_runway_departure => actual_runway_departure,
-      :actual_runway_arrival => actual_runway_arrival,
-      :actual_air_time => actual_air_time,
-      :actual_block_time => actual_block_time,
-      :actual_aircraft_type => actual_aircraft_type,
-      :airline_icao_code => airline_icao_code,
-      :origin_icao_code => origin_icao_code, 
-      :destination_icao_code => destination_icao_code,
-      :diverted_icao_code => diverted_icao_code
-    }
-  end
-  
-  
-  private
-  
-    def self.fetch_from_flightstats(params)
-      parse(FlightStats.query(params))    
+    
+    node.children.each do |e|
+      case e.name
+      when 'FlightHistoryCodeshare' then codeshares << parse_code_share(e)
+      when 'Airline' 
+        @attributes['airline_icao_code'] = e.attributes['ICAOCode']
+        airline = FlightStats::Airline.new(e)
+      when 'Origin' then @attributes['origin_icao_code'] = e.attributes['ICAOCode']
+      when 'Destination' then @attributes['destination_icao_code'] = e.attributes['ICAOCode']
+      when 'Diverted' then @attributes['diverted_icao_code'] = e.attributes['ICAOCode']
+      end
     end
     
-    def self.parse_code_share(xml)
-      { :designator => xml.attributes['Designator'],
-        :airline_icao => xml.children[0].attributes['ICAOCode'],
-        :number => xml.attributes['FlightNumber'] }
+    node.children[1..-1].each do |e|
+      if e.name == "AggregatedAirport"
+        port = FlightStats::Airport.parse(e)
+        if port.icao_code == @attributes['destination_icao_code']
+          port.timezone_offset = node.attributes['ArrivalAirportTimeZoneOffset']
+          destination_airport = port
+        elsif port.icao_code == @attributes['origin_icao_code']
+          port.timezone_offset = node.attributes['DepartureAirportTimeZoneOffset']
+          origin_airport = port
+        elsif port.icao_code == @attributes['diverted_icao_code']
+          port.timezone_offset = node.attributes['DivertedAirportTimeZoneOffset']
+          diverted_airport = port
+        end
+      end
     end
+    
+  end
+
+  def parse_code_share(xml)
+    { :designator => xml.attributes['Designator'],
+      :airline_icao => xml.children[0].attributes['ICAOCode'],
+      :number => xml.attributes['FlightNumber'] }
+  end
   
 end
