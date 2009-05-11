@@ -15,11 +15,10 @@ class FlightStats::Flight
   QUERY_PARAMS = { 'Service' => 'FlightHistoryGetRecordsService' }
   
   attr_accessor :attributes
-  attr_accessor :codeshares, :origin_airport, :destination_airport,
+  attr_accessor :origin_airport, :destination_airport,
                 :diverted_airport, :airline
   
   def initialize(attributes_or_xml=nil)
-    @codeshares = []
     case attributes_or_xml
     when LibXML::XML::Document, LibXML::XML::Node
       parse_flightstats_xml(attributes_or_xml)
@@ -28,6 +27,7 @@ class FlightStats::Flight
     else
       @attributes = Hash.new
     end
+    @attributes['codeshares'] ||= []
     result = yield self if block_given?
   end
   
@@ -61,6 +61,7 @@ class FlightStats::Flight
     return nil if node == nil
     
     @attributes = node.attributes.to_h.underscore_keys
+    @attributes['codeshares'] ||= []    
     
     @attributes.each_pair do |key, value|
       case key
@@ -73,7 +74,7 @@ class FlightStats::Flight
     
     node.children.each do |e|
       case e.name
-      when 'FlightHistoryCodeshare' then codeshares << parse_code_share(e)
+      when 'FlightHistoryCodeshare' then @attributes['codeshares'] << parse_code_share(e)
       when 'Airline' 
         @attributes['airline_icao_code'] = e.attributes['ICAOCode']
         airline = FlightStats::Airline.new(e)
