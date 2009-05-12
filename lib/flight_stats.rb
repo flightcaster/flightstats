@@ -1,11 +1,9 @@
-require 'rubygems'
 require 'libxml'
 require 'net/https'
 
 # = EXTENSIONS ===============================================================
-require File.join(File.dirname(__FILE__), '..', 'ext', 'string')
-require File.join(File.dirname(__FILE__), '..', 'ext', 'hash')
-
+require File.expand_path(File.join(File.dirname(__FILE__), '../ext/string'))
+require File.expand_path(File.join(File.dirname(__FILE__), '../ext/hash'))
 
 
 module FlightStats
