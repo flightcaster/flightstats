@@ -45,13 +45,21 @@ class FlightStats::Flight
   
   class << self
     
+    # Returns an array of results. Searching for a flight by the icao and flight number results in 
+    # 1 to many results from the api
     def get(airline_icao_code, flight_number, depatring_date=nil)
       depatring_date ||= Date.today
       params = { QUERY_OPTIONS[:departure_date_min] => "#{depatring_date.strftime('%Y-%m-%d')}T00:00",
         QUERY_OPTIONS[:departure_date_max] => "#{depatring_date.strftime('%Y-%m-%d')}T24:00",
         QUERY_OPTIONS[:icao_code] => airline_icao_code.upcase,
         QUERY_OPTIONS[:flight_number] => flight_number }.merge(QUERY_PARAMS)
-      FlightStats::Flight.new(FlightStats.query(params))
+      results = []
+      FlightStats.query(params).root.each do |node|
+        if node.name == "FlightHistory"
+          results << FlightStats::Flight.new(node)
+        end
+      end
+      results
     end
     
   end

@@ -3,8 +3,9 @@ require 'libxml'
 require 'net/https'
 
 # = EXTENSIONS ===============================================================
-require '../ext/string'
-require '../ext/hash'
+require File.join(File.dirname(__FILE__), '..', 'ext', 'string')
+require File.join(File.dirname(__FILE__), '..', 'ext', 'hash')
+
 
 
 module FlightStats
