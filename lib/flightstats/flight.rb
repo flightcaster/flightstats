@@ -59,16 +59,21 @@ class FlightStats::Flight
   def parse_flightstats_xml(xml)
     node = (xml.class == LibXML::XML::Node ? xml : xml.root.child)
     return nil if node == nil
+
+    @attributes = {'codeshares' => []}
     
-    @attributes = node.attributes.to_h.underscore_keys
-    @attributes['codeshares'] ||= []    
-    
-    @attributes.each_pair do |key, value|
+    node.attributes.to_h.underscore_keys.each_pair do |key, value|
       case key
-      when 'flight_number', /number/, /air_time/, /block_time/
-        @attributes[key] = value.to_i
+      when 'flight_number'
+        @attributes['number'] = value.to_i
+      when 'flight_history_id'
+        @attributes['history_id'] = value
       when /date/i, /(estimated|scheduled).+(departure|arrival)/i
-        @attributes[key] = DateTime.parse(value)
+        @attributes[key.gsub(/_date$/,"")+'_time'] = DateTime.parse(value)
+      when /number/, /air_time/, /block_time/
+        @attributes[key] = value.to_i
+      else
+        @attributes[key] = value if !(key =~ /(arrival|departure|diverted)_airport_time_zone_offset/)
       end
     end
     
