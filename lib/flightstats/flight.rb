@@ -54,6 +54,38 @@ class FlightStats::Flight
       FlightStats::Flight.new(FlightStats.query(params))
     end
     
+    def get_updates(time=nil)
+      files = get_updates_file_list(time)
+      files.each do |file|
+        `curl -o feed.gz 'http://www.pathfinder-xml.com/development/feed?login.guid=#{FLIGHTSTATS_GUID}&file=#{file}'`
+        `gzip -d feed.gz`
+        `rm feed.gz`
+        `tr -d '	' < feed > feeder`
+        `tr -d '\n' < feed > feeder`
+        xml = LibXML::XML::Parser.file('feeder').parse
+        xml.root.children.each do |child|
+#          puts child.name
+          timestamp = DateTime.parse(child.attributes['DateTimeRecorded'])
+          f = FlightStats::Flight.new(child.children[0])
+          f.attributes['timestamp'] = timestamp
+          puts f.attributes
+        end
+      end
+    end
+    
+    def get_updates_file_list(time=nil)
+      time ||= (Time.now - 60)
+      http = Net::HTTP.new("www.pathfinder-xml.com", 443)
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      reponse = http.get("/development/feed?lastAccessed=#{time.utc.strftime("%Y%m%dT%H%M%S")}&useUTC=true&login.guid=#{FLIGHTSTATS_GUID}").body
+      xml = LibXML::XML::Parser.string(reponse).parse
+      files = []
+      xml.root.children.each do |child|
+        files << child['ID']
+      end
+      files
+    end
   end
   
   def parse_flightstats_xml(xml)
