@@ -71,8 +71,6 @@ class FlightStats::Airline
     
     node = node.child if node.name == "AirlineDetail" # this needs to be changed to parse airline details
     
-    puts node.attributes.to_h
-    puts node.attributes.to_h.underscore_keys
     @attributes = node.attributes.to_h.underscore_keys
     @attributes['flightstats_code'] = @attributes.delete('airline_code')
   end

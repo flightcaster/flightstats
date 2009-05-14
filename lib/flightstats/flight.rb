@@ -63,22 +63,21 @@ class FlightStats::Flight
     end
     
     def get_updates(time=nil)
+      updates = []
       files = get_updates_file_list(time)
-      files.each do |file|
-        `curl -o feed.gz 'http://www.pathfinder-xml.com/development/feed?login.guid=#{FLIGHTSTATS_GUID}&file=#{file}'`
-        `gzip -d feed.gz`
-        `rm feed.gz`
-        `tr -d '	' < feed > feeder`
-        `tr -d '\n' < feed > feeder`
-        xml = LibXML::XML::Parser.file('feeder').parse
+      files.each do |f|
+        file = open("http://www.pathfinder-xml.com/development/feed?login.guid=#{FLIGHTSTATS_GUID}&file=#{f[:id]}")
+        xml = LibXML::XML::Parser.string(Zlib::GzipReader.new(file).read).parse
         xml.root.children.each do |child|
-#          puts child.name
-          timestamp = DateTime.parse(child.attributes['DateTimeRecorded'])
-          f = FlightStats::Flight.new(child.children[0])
-          f.attributes['timestamp'] = timestamp
-          puts f.attributes
+          if child.name != 'text'
+            timestamp = DateTime.parse(child.attributes['DateTimeRecorded'])
+            f = FlightStats::Flight.new(child.children[0])
+            f.attributes['timestamp'] = timestamp
+            updates << f
+          end
         end
       end
+      updates
     end
     
     def get_updates_file_list(time=nil)
@@ -86,11 +85,13 @@ class FlightStats::Flight
       http = Net::HTTP.new("www.pathfinder-xml.com", 443)
       http.use_ssl = true
       http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-      reponse = http.get("/development/feed?lastAccessed=#{time.utc.strftime("%Y%m%dT%H%M%S")}&useUTC=true&login.guid=#{FLIGHTSTATS_GUID}").body
+      reponse = http.get("/development/feed?lastAccessed=#{time.utc.strftime("%Y-%m-%dT%H:%M")}&useUTC=true&login.guid=#{FLIGHTSTATS_GUID}").body
       xml = LibXML::XML::Parser.string(reponse).parse
       files = []
       xml.root.children.each do |child|
-        files << child['ID']
+        if child['DateTimeUTC'][0..15] != time.utc.strftime("%Y-%m-%dT%H:%M")
+          files << {:id => child['ID'], :date => child['DateTimeUTC'][0..15]}
+        end
       end
       files
     end
