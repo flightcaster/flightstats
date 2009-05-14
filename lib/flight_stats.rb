@@ -5,7 +5,6 @@ require 'net/https'
 require File.expand_path(File.join(File.dirname(__FILE__), '../ext/string'))
 require File.expand_path(File.join(File.dirname(__FILE__), '../ext/hash'))
 
-
 module FlightStats
   
   @api_server = "www.pathfinder-xml.com"
