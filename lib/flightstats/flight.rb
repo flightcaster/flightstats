@@ -70,7 +70,8 @@ class FlightStats::Flight
         xml = LibXML::XML::Parser.string(Zlib::GzipReader.new(file).read).parse
         xml.root.children.each do |child|
           if child.name != 'text'
-            timestamp = DateTime.parse(child.attributes['DateTimeRecorded'])
+            date = child.attributes['DateTimeRecorded']
+            timestamp = Time.utc(date[0..3],date[5..6],date[8..9],date[11..12],date[14..15],date[17..19]) + 3600*7
             f = FlightStats::Flight.new(child.children[0])
             f.attributes['timestamp'] = timestamp
             updates << f
