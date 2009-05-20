@@ -1,10 +1,10 @@
 require 'libxml'
 require 'net/https'
+require 'open-uri'
+require 'zlib'
 
-# = EXTENSIONS ===============================================================
 require File.expand_path(File.join(File.dirname(__FILE__), '../ext/string'))
 require File.expand_path(File.join(File.dirname(__FILE__), '../ext/hash'))
-
 
 module FlightStats
   
