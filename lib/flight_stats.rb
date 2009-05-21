@@ -1,6 +1,8 @@
 require 'libxml'
 require 'net/https'
 require 'open-uri'
+require 'date'
+require 'time'
 require 'zlib'
 
 require File.expand_path(File.join(File.dirname(__FILE__), '../ext/string'))
@@ -43,16 +45,16 @@ module FlightStats
   
 end
 
-require_relative 'flightstats/airline'
-require_relative 'flightstats/airport'
-require_relative 'flightstats/metar'
-require_relative 'flightstats/weather_forecast'
-require_relative 'flightstats/flight'
-require_relative 'flightstats/airport/delay'
-require_relative 'flightstats/airport/delay/closed_delay'
-require_relative 'flightstats/airport/delay/general_delay'
-require_relative 'flightstats/airport/delay/general_arrival_delay'
-require_relative 'flightstats/airport/delay/general_departure_delay'
-require_relative 'flightstats/airport/delay/general_arrival_delay'
-require_relative 'flightstats/airport/delay/ground_delay'
-require_relative 'flightstats/airport/delay/ground_stop_delay'
+require 'flightstats/airline'
+require 'flightstats/airport'
+require 'flightstats/metar'
+require 'flightstats/weather_forecast'
+require 'flightstats/flight'
+require 'flightstats/airport/delay'
+require 'flightstats/airport/delay/closed_delay'
+require 'flightstats/airport/delay/general_delay'
+require 'flightstats/airport/delay/general_arrival_delay'
+require 'flightstats/airport/delay/general_departure_delay'
+require 'flightstats/airport/delay/general_arrival_delay'
+require 'flightstats/airport/delay/ground_delay'
+require 'flightstats/airport/delay/ground_stop_delay'

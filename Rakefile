@@ -1,8 +1,7 @@
 require 'rubygems'
 require 'hoe'
-require './lib/flightstats'
 
-Hoe.new('flightstats', FlightStats::VERSION) do |p|
+Hoe.new('flightstats', '0.0.1') do |p|
   p.url = 'http://github.com/flightcaster/noaa'
   p.description = "A wrapper for the FlightStats API"
   p.email = "crew@flightcaster.com"

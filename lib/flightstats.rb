@@ -1,1 +1,1 @@
-require_relative 'flight_stats'
+require 'flight_stats'
