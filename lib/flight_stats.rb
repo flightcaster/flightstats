@@ -7,6 +7,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), '../ext/string'))
 require File.expand_path(File.join(File.dirname(__FILE__), '../ext/hash'))
 
 module FlightStats
+  VERSION = '0.0.1'
   
   @api_server = "www.pathfinder-xml.com"
   @api_base_path = "/development/xml"
@@ -42,16 +43,16 @@ module FlightStats
   
 end
 
-require 'flightstats/airline'
-require 'flightstats/airport'
-require 'flightstats/metar'
-require 'flightstats/weather_forecast'
-require 'flightstats/flight'
-require 'flightstats/airport/delay'
-require 'flightstats/airport/delay/closed_delay'
-require 'flightstats/airport/delay/general_delay'
-require 'flightstats/airport/delay/general_arrival_delay'
-require 'flightstats/airport/delay/general_departure_delay'
-require 'flightstats/airport/delay/general_arrival_delay'
-require 'flightstats/airport/delay/ground_delay'
-require 'flightstats/airport/delay/ground_stop_delay'
+require_relative 'flightstats/airline'
+require_relative 'flightstats/airport'
+require_relative 'flightstats/metar'
+require_relative 'flightstats/weather_forecast'
+require_relative 'flightstats/flight'
+require_relative 'flightstats/airport/delay'
+require_relative 'flightstats/airport/delay/closed_delay'
+require_relative 'flightstats/airport/delay/general_delay'
+require_relative 'flightstats/airport/delay/general_arrival_delay'
+require_relative 'flightstats/airport/delay/general_departure_delay'
+require_relative 'flightstats/airport/delay/general_arrival_delay'
+require_relative 'flightstats/airport/delay/ground_delay'
+require_relative 'flightstats/airport/delay/ground_stop_delay'
