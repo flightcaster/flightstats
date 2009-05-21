@@ -148,7 +148,18 @@ class FlightStats::Flight
     end
     
   end
-
+  
+  def method_missing(method_name, *args, &block)
+    method_name = method_name.to_s
+    if method_name =~ /=$/ && attributes[method_name[0..-2]]
+      attributes[method_name[0..-2]] = args
+    elsif attributes[method_name]
+      attributes[method_name]
+    else
+      raise NoMethodError
+    end
+  end
+  
   def parse_code_share(xml)
     { :designator => xml.attributes['Designator'],
       :airline_icao => xml.children[0].attributes['ICAOCode'],
