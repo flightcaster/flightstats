@@ -32,7 +32,7 @@ module FlightStats
     # Sends a request to the Flightcaster server using the given params
     def query(params)
       url = api_path + "&" + params.collect { |k, v| "#{k.to_s}=#{v.to_s}"}.join('&')
-
+      
       http = Net::HTTP.new(@api_server, 443)
       http.use_ssl = true
       http.verify_mode = OpenSSL::SSL::VERIFY_NONE
