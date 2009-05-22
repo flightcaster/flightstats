@@ -18,8 +18,8 @@ Dir["#{File.dirname(__FILE__)}/tasks/*.rake"].sort.each { |ext| load ext }
 
 require 'spec/rake/spectask'
 Spec::Rake::SpecTask.new do |t|
-  t.warning = true
-  t.rcov = true
+#  t.warning = true
+#  t.rcov = true
   t.spec_files = Dir["#{File.dirname(__FILE__)}/test/*_spec.rb"]
 end
 

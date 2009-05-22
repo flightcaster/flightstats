@@ -70,12 +70,11 @@ class FlightStats::Airline
     return nil if node == nil
     
     node = node.child if node.name == "AirlineDetail" # this needs to be changed to parse airline details
+
     if node.name == "Error"
       raise node.children[0].content
     end
-    if node.children.first.name == 'Error'
-      raise RuntimeError
-    end
+
     @attributes = node.attributes.to_h.underscore_keys
     @attributes['flightstats_code'] = @attributes.delete('airline_code')
   end
