@@ -45,16 +45,16 @@ module FlightStats
   
 end
 
-require 'flightstats/airline'
-require 'flightstats/airport'
-require 'flightstats/metar'
-require 'flightstats/weather_forecast'
-require 'flightstats/flight'
-require 'flightstats/airport/delay'
-require 'flightstats/airport/delay/closed_delay'
-require 'flightstats/airport/delay/general_delay'
-require 'flightstats/airport/delay/general_arrival_delay'
-require 'flightstats/airport/delay/general_departure_delay'
-require 'flightstats/airport/delay/general_arrival_delay'
-require 'flightstats/airport/delay/ground_delay'
-require 'flightstats/airport/delay/ground_stop_delay'
+require File.expand_path(File.join(File.dirname(__FILE__), 'flightstats/airline'))
+require File.expand_path(File.join(File.dirname(__FILE__), 'flightstats/airport'))
+require File.expand_path(File.join(File.dirname(__FILE__), 'flightstats/metar'))
+require File.expand_path(File.join(File.dirname(__FILE__), 'flightstats/weather_forecast'))
+require File.expand_path(File.join(File.dirname(__FILE__), 'flightstats/flight'))
+require File.expand_path(File.join(File.dirname(__FILE__), 'flightstats/airport/delay'))
+require File.expand_path(File.join(File.dirname(__FILE__), 'flightstats/airport/delay/closed_delay'))
+require File.expand_path(File.join(File.dirname(__FILE__), 'flightstats/airport/delay/general_delay'))
+require File.expand_path(File.join(File.dirname(__FILE__), 'flightstats/airport/delay/general_arrival_delay'))
+require File.expand_path(File.join(File.dirname(__FILE__), 'flightstats/airport/delay/general_departure_delay'))
+require File.expand_path(File.join(File.dirname(__FILE__), 'flightstats/airport/delay/general_arrival_delay'))
+require File.expand_path(File.join(File.dirname(__FILE__), 'flightstats/airport/delay/ground_delay'))
+require File.expand_path(File.join(File.dirname(__FILE__), 'flightstats/airport/delay/ground_stop_delay'))
