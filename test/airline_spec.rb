@@ -25,4 +25,5 @@ describe FlightStats::Airline do
                                         'icao_code' => 'AAL').attributes
     result.should == expected
   end
+  
 end
