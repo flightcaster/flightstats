@@ -20,6 +20,8 @@ require 'spec/rake/spectask'
 Spec::Rake::SpecTask.new do |t|
 #  t.warning = true
 #  t.rcov = true
+#  t.spec_opts = ["--format","specdoc","--color"]
+  t.spec_opts = ["--color"]
   t.spec_files = Dir["#{File.dirname(__FILE__)}/test/*_spec.rb"]
 end
 
