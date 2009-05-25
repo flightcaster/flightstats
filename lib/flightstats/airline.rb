@@ -58,7 +58,7 @@ class FlightStats::Airline
     when LibXML::XML::Document, LibXML::XML::Node
       parse_flightstats_xml(attributes_or_xml)
     when Hash
-      @attributes = attributes_or_xml.class
+      @attributes = attributes_or_xml
     else
       @attributes = Hash.new
     end
@@ -70,7 +70,11 @@ class FlightStats::Airline
     return nil if node == nil
     
     node = node.child if node.name == "AirlineDetail" # this needs to be changed to parse airline details
-    
+
+    if node.name == "Error"
+      raise node.children[0].content
+    end
+
     @attributes = node.attributes.to_h.underscore_keys
     @attributes['flightstats_code'] = @attributes.delete('airline_code')
   end

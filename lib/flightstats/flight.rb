@@ -67,15 +67,13 @@ class FlightStats::Flight
       files = get_updates_file_list(time)
       files.each do |f|
         file = open("http://www.pathfinder-xml.com/development/feed?login.guid=#{FLIGHTSTATS_GUID}&file=#{f[:id]}")
-        xml = LibXML::XML::Parser.string(Zlib::GzipReader.new(file).read).parse
+        xml = LibXML::XML::Parser.string(Zlib::GzipReader.new(file).read.gsub(/\t|\n/,"")).parse
         xml.root.children.each do |child|
-          if child.name != 'text'
-            date = child.attributes['DateTimeRecorded']
-            timestamp = Time.utc(date[0..3],date[5..6],date[8..9],date[11..12],date[14..15],date[17..19]) + 3600*7
-            f = FlightStats::Flight.new(child.children[0])
-            f.attributes['timestamp'] = timestamp
-            updates << f
-          end
+          date = child.attributes['DateTimeRecorded']
+          timestamp = Time.utc(date[0..3],date[5..6],date[8..9],date[11..12],date[14..15],date[17..19]) + 3600* 7
+          f = FlightStats::Flight.new(child.children[0])
+          f.attributes['timestamp'] = timestamp
+          updates << f
         end
       end
       updates
@@ -87,10 +85,10 @@ class FlightStats::Flight
       http.use_ssl = true
       http.verify_mode = OpenSSL::SSL::VERIFY_NONE
       reponse = http.get("/development/feed?lastAccessed=#{time.utc.strftime("%Y-%m-%dT%H:%M")}&useUTC=true&login.guid=#{FLIGHTSTATS_GUID}").body
-      xml = LibXML::XML::Parser.string(reponse).parse
+      xml = LibXML::XML::Parser.string(reponse.gsub(/\t|\n/,"")).parse
       files = []
       xml.root.children.each do |child|
-        if child['DateTimeUTC'][0..15] != time.utc.strftime("%Y-%m-%dT%H:%M")
+        if child.attributes['DateTimeUTC'][0..15] != time.utc.strftime("%Y-%m-%dT%H:%M")
           files << {:id => child['ID'], :date => child['DateTimeUTC'][0..15]}
         end
       end
