@@ -5,8 +5,6 @@ class FlightStats::Flight
     case attributes_or_xml
     when LibXML::XML::Document, LibXML::XML::Node
       parse_flightstats_xml(attributes_or_xml)
-    when Hash
-      @attributes = attributes_or_xml.class
     else
       @attributes = Hash.new
     end

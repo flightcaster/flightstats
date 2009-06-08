@@ -14,8 +14,4 @@ class Hash
     self
   end
   
-  def parameterize
-    self.collect { |key, value| "#{key}=#{value}" }.join('&')
-  end
-  
 end

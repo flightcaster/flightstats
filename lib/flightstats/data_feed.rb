@@ -1,6 +1,6 @@
 class FlightStats::DataFeed
   
-  attr_accessor :last_accessed, :files
+  attr_reader :last_accessed, :files
   
   def initialize(time=nil)
     @last_accessed = (time || Time.now)
@@ -16,21 +16,33 @@ class FlightStats::DataFeed
       attributes['date_time'] = attributes['date_time_utc']
       attributes.delete('date_time_utc')
       attributes.each {|key, value| attributes[key] = value.to_i if !key.index('time')}
-      attributes['url'] = FlightStats::query_url({:file=>attributes['id']}, '/development/feed')
       @files << attributes
     end
   end
-      
-  def updates
+  
+  # passes each file to a block,
+  # each file is the raw gzipped file from flightstats, StringIO object
+  def each_gz_file
     @files.each do |file|
-      file = Zlib::GzipReader.new( open(file['url']) )
-      parser_options = {:options => LibXML::XML::Parser::Options::NOBLANKS}
+      yield( FlightStats::raw_query({:file=>file['id']}, '/development/feed') )
+    end
+  end
+
+  # passes each file to a block, each file is a Zlib::GzipReader instance
+  def each_file
+    each_gz_file { |gz_file| yield( Zlib::GzipReader.new(gz_file) ) }
+  end
+      
+  # passes each update to a block, each update is an instance of FlightStats::Flight
+  def each
+    parser_options = {:options => LibXML::XML::Parser::Options::NOBLANKS}
+    each_file do |file|
       xml = LibXML::XML::Parser.string(file.read, parser_options).parse.root
-      xml.children.each do |child|
-        flight = FlightStats::Flight.new(child.children[0])
-        time_updated = Time.parse(child.attributes['DateTimeRecorded'][0..18] + ' PT')
-        flight.attributes['time_updated'] = time_updated.utc
-        yield(flight, child)
+      xml.children.each do |node|
+        flight = FlightStats::Flight.new(node.children[0])
+        time_updated = Time.parse(node.attributes['DateTimeRecorded'][0..18] + ' PT')
+        flight.attributes['updated_at'] = time_updated.utc
+        yield(flight)
       end
     end
   end
