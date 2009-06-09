@@ -48,7 +48,9 @@ class DelayFeedTest < Test::Unit::TestCase
     assert_equal att["scheduled_runway_arrival_time"].to_s, "Mon Jun 08 21:45:00 UTC 2009"
     assert_equal att["arrival_airport_time_zone_offset"], -4
     assert_equal att["destination_icao_code"], "KGSO"
-    assert_equal att["airline"].attributes, {"iata_code"=>"G4", "icao_code"=>"AAY"}
+    assert_equal changes[0].airline.attributes, {"iata_code"=>"G4", "icao_code"=>"AAY"}
+    assert_equal att["airline_icao_code"], "AAY"
+    assert_equal att["airline_iata_code"], "G4"
     assert_equal att["arrival_time"].to_s, "Mon Jun 08 21:45:00 UTC 2009"
     assert_equal att["departure_airport_time_zone_offset"], -4
     assert_equal att["status_code"], "A"
@@ -77,7 +79,9 @@ class DelayFeedTest < Test::Unit::TestCase
     assert_equal att["scheduled_runway_arrival_time"].to_s, "Tue Jun 09 03:21:00 UTC 2009"
     assert_equal att["arrival_airport_time_zone_offset"], -4
     assert_equal att["destination_icao_code"], "KPIT"
-    assert_equal att["airline"].attributes, {"iata_code"=>"CO", "icao_code"=>"COA"}
+    assert_equal changes[6].airline.attributes, {"iata_code"=>"CO", "icao_code"=>"COA"}
+    assert_equal att["airline_icao_code"], "COA"
+    assert_equal att["airline_iata_code"], "CO"
     assert_equal att["estimated_gate_arrival_time"].to_s, "Tue Jun 09 03:35:00 UTC 2009"
     assert_equal att["arrival_time"].to_s, "Tue Jun 09 03:35:00 UTC 2009"
     assert_equal att["published_arrival_time"].to_s, "Tue Jun 09 03:35:00 UTC 2009"
