@@ -1,28 +1,38 @@
 require 'rubygems'
+require 'metric_fu'
+require 'rake/testtask'
 
-require 'hoe'
-Hoe.new('flightstats', '0.0.1') do |p|
-  p.url = 'http://github.com/flightcaster/noaa'
-  p.description = "A wrapper for the FlightStats API"
-  p.email = "crew@flightcaster.com"
-  p.summary = "A wrapper for the FlightStats API"
-  # p.changes = p.paragraphs_of('CHANGELOG', 0..1).join("\n\n")
-  # p.remote_rdoc_dir = '' # Release to root
-  p.developer('James Bracy', 'james@flightcaster.com')
-  p.developer('Jon Bracy', 'jon@flightcaster.com')
-  p.extra_deps = [ ["libxml-ruby >= 1.1.3"] ]
+task :t do
+  require 'lib/flightstats'
+  FLIGHTSTATS_GUID = '70cbe593c1d6de05:28bcb570:1209d62fd3a:-1b12'
+  FlightStats::DataFeed.new(Time.now-60).each_file do |f| 
+      puts f.class
+  end
 end
 
-Dir["#{File.dirname(__FILE__)}/tasks/*.rake"].sort.each { |ext| load ext }
-
-
-require 'spec/rake/spectask'
-Spec::Rake::SpecTask.new do |t|
-#  t.warning = true
-#  t.rcov = true
-#  t.spec_opts = ["--format","specdoc","--color"]
-  t.spec_opts = ["--color"]
-  t.spec_files = Dir["#{File.dirname(__FILE__)}/test/*_spec.rb"]
+MetricFu::Configuration.run do |config|
+    config.metrics  = [:churn, :saikuro, :flog, :flay, :reek, :roodi, :rcov]
+    config.flay     = { :dirs_to_flay => ['lib']  } 
+    config.flog     = { :dirs_to_flog => ['lib']  }
+    config.reek     = { :dirs_to_reek => ['lib']  }
+    config.roodi    = { :dirs_to_roodi => ['lib'] }
+    config.saikuro  = { :output_directory => 'tmp/scratch/saikuro', 
+                        :input_directory => ['lib'],
+                        :cyclo => "",
+                        :filter_cyclo => "0",
+                        :warn_cyclo => "5",
+                        :error_cyclo => "7",
+                        :formater => "text"} #this needs to be set to "text"
+    config.churn    = { :start_date => "1 year ago", :minimum_churn_count => 10}
+    config.rcov     = { :test_files => ['test/*_test.rb','test/*_test.rb'],
+                        :rcov_opts => ["--sort coverage",
+                                       "--no-html", 
+                                       "--text-coverage",
+                                       "--no-color",
+                                       "--profile",
+                                       "--exclude /gems/,/Library/,spec"]}
 end
 
-# vim: syntax=Ruby
+Rake::TestTask.new(:test) do |t|
+  t.test_files = FileList['test/*_test.rb']
+end

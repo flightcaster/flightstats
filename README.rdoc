@@ -20,3 +20,4 @@
 	boston.arrivals.each do |flight|
 		puts flight.number
 	end
+

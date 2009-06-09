@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlightHistoryEventFeedResponse xmlns="http://pathfinder-xml/FlightHistoryEventFeedService.xsd"><File Bytes="265293" DateTime="2009-06-08T14:37:00.000" DateTimeUTC="2009-06-08T21:37:00.000" ID="4551477" Messages="1760"/><File Bytes="231618" DateTime="2009-06-08T14:38:00.000" DateTimeUTC="2009-06-08T21:38:00.000" ID="4551480" Messages="1505"/></FlightHistoryEventFeedResponse>

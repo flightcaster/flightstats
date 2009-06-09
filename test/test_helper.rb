@@ -1,5 +1,9 @@
 require 'rubygems'
-require "#{File.dirname(__FILE__)}/../lib/flight_stats"
+require 'test/unit'
 require 'fakeweb'
 
-eval("::FLIGHTSTATS_GUID = 'my_guid'")
+FLIGHTSTATS_GUID = 'test'
+
+$: << File.join(File.dirname(__FILE__), '..', 'lib')
+
+require 'flightstats'
