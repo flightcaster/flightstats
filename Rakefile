@@ -2,14 +2,6 @@ require 'rubygems'
 require 'metric_fu'
 require 'rake/testtask'
 
-task :t do
-  require 'lib/flightstats'
-  FLIGHTSTATS_GUID = '70cbe593c1d6de05:28bcb570:1209d62fd3a:-1b12'
-  FlightStats::DataFeed.new(Time.now-60).each_file do |f| 
-      puts f.class
-  end
-end
-
 MetricFu::Configuration.run do |config|
     config.metrics  = [:churn, :saikuro, :flog, :flay, :reek, :roodi, :rcov]
     config.flay     = { :dirs_to_flay => ['lib']  } 
