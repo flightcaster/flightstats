@@ -1,5 +1,6 @@
 class FlightStats::Flight
-  attr_accessor :attributes
+  attr_accessor :attributes,
+                :airline
                 
   def initialize(attributes_or_xml=nil)
     case attributes_or_xml
@@ -58,7 +59,9 @@ class FlightStats::Flight
       case e.name
       when 'FlightHistoryCodeshare' then @attributes['codeshares'] << parse_code_share(e)
       when 'Airline'
-        @attributes['airline'] = FlightStats::Airline.new(e)
+        @airline = FlightStats::Airline.new(e)
+        @attributes['airline_iata_code'] = @airline.attributes['iata_code'] if @airline.attributes['iata_code']
+        @attributes['airline_icao_code'] = @airline.attributes['icao_code'] if @airline.attributes['icao_code']
       when 'Origin' then @attributes['origin_icao_code'] = e.attributes['ICAOCode']
       when 'Destination' then @attributes['destination_icao_code'] = e.attributes['ICAOCode']
       when 'Diverted' then @attributes['diverted_icao_code'] = e.attributes['ICAOCode']

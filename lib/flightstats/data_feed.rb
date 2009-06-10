@@ -13,7 +13,7 @@ class FlightStats::DataFeed
               :useUTC => true}
     FlightStats.query(params, '/development/feed').root.children.each do |child|
       attributes = child.attributes.to_h.underscore_keys
-      attributes['timestamp'] = attributes['date_time_utc']
+      attributes['timestamp'] = Time.parse(attributes['date_time_utc'][0..18]+"+00:00").utc
       attributes.delete('date_time_utc')
       attributes.delete('date_time')
       attributes.each {|key, value| attributes[key] = value.to_i if !key.index('time')}
