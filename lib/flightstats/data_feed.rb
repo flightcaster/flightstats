@@ -35,7 +35,7 @@ class FlightStats::DataFeed
   end
       
   # passes each update to a block, each update is an instance of FlightStats::Flight
-  def each
+  def each(&block)
     updates = [] if !block_given?
     parser_options = {:options => LibXML::XML::Parser::Options::NOBLANKS}
     each_file do |file, timestamp|
@@ -45,7 +45,11 @@ class FlightStats::DataFeed
         time_updated = Time.parse(node.attributes['DateTimeRecorded'][0..18] + ' PT')
         flight.attributes['updated_at'] = time_updated.utc
         if block_given?
-          yield(flight)
+          if block.arity == 1
+            block.call(flight)
+          elsif block.arity == 3
+            block.call(flight, file, timestamp)
+          end
         else
           updates << flight
         end

@@ -20,7 +20,7 @@ class DelayFeedTest < Test::Unit::TestCase
     FlightStats::DataFeed.new.each do |f|
       count += 1
     end
-    assert_equal 10, count
+    assert_equal 11, count
   end
 
   def test_should_check_correctness_of_data
@@ -90,6 +90,46 @@ class DelayFeedTest < Test::Unit::TestCase
     assert_equal att["estimated_gate_departure_time"].to_s, "Tue Jun 09 00:35:00 UTC 2009"
     assert_equal att["scheduled_air_time"], 145
     assert_equal att["history_id"], 161861862
+    
+    att = changes.last.attributes
+    assert_equal att["estimated_runway_arrival_time"].to_s, "Mon Jun 08 20:15:00 UTC 2009"
+    assert_equal att["actual_runway_arrival_time"].to_s, "Mon Jun 08 20:16:55 UTC 2009"
+    assert_equal att["actual_gate_arrival_time"].to_s, "Mon Jun 08 20:16:00 UTC 2009"
+    assert_equal att["departure_terminal"], "I"
+    assert_equal att["departure_gate"], "A1"
+    assert_equal att["updated_at"].to_s, "Mon Jun 08 20:25:00 UTC 2009"
+    assert_equal att["actual_air_time"], 69
+    assert_equal att["published_departure_time"].to_s, "Mon Jun 08 18:55:00 UTC 2009"
+    assert_equal att["arrival_terminal"], "1"
+    assert_equal att["number"], 260
+    assert_equal att["airline_icao_code"], "VRD"
+    assert_equal att["scheduled_gate_arrival_time"].to_s, "Mon Jun 08 20:30:00 UTC 2009"
+    assert_equal att["origin_icao_code"], "KSFO"
+    assert_equal att["scheduled_gate_departure_time"].to_s, "Mon Jun 08 18:55:00 UTC 2009"
+    assert_equal att["creator_code"], "O"
+    assert_equal att["estimated_runway_departure_time"].to_s, "Mon Jun 08 19:08:00 UTC 2009"
+    assert_equal att["scheduled_runway_departure_time"].to_s, "Mon Jun 08 19:08:00 UTC 2009"
+    assert_equal att["actual_block_time"], 82
+    assert_equal att["codeshares"], []
+    assert_equal att["airline_iata_code"], "VX"
+    assert_equal att["departure_time"].to_s, "Mon Jun 08 18:55:00 UTC 2009"
+    assert_equal att["scheduled_block_time"], 95
+    assert_equal att["scheduled_aircraft_type"], "320"
+    assert_equal att["actual_runway_departure_time"].to_s, "Mon Jun 08 19:07:51 UTC 2009"
+    assert_equal att["scheduled_runway_arrival_time"].to_s, "Mon Jun 08 20:20:00 UTC 2009"
+    assert_equal att["arrival_airport_time_zone_offset"], -7
+    assert_equal att["baggage_claim"], ""
+    assert_equal att["destination_icao_code"], "KLAS"
+    assert_equal att["estimated_gate_arrival_time"].to_s, "Mon Jun 08 20:12:00 UTC 2009"
+    assert_equal att["arrival_time"].to_s, "Mon Jun 08 20:30:00 UTC 2009"
+    assert_equal att["published_arrival_time"].to_s, "Mon Jun 08 20:30:00 UTC 2009"
+    assert_equal att["departure_airport_time_zone_offset"], -7
+    assert_equal att["status_code"], "L"
+    assert_equal att["actual_gate_departure_time"].to_s, "Mon Jun 08 18:54:00 UTC 2009"
+    assert_equal att["estimated_gate_departure_time"].to_s, "Mon Jun 08 18:55:00 UTC 2009"
+    assert_equal att["scheduled_air_time"], 72
+    assert_equal att["arrival_gate"], "B20"
+    assert_equal att["history_id"], 161901260
 
   end
 end
