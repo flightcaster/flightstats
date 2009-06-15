@@ -37,30 +37,36 @@ class FlightStats::DataFeed
   # passes each update to a block, each update is an instance of FlightStats::Flight
   def each(&block)
     updates = [] if !block_given?
-    parser_options = {:options => LibXML::XML::Parser::Options::NOBLANKS}
     each_file do |file, timestamp|
-      xml = LibXML::XML::Parser.string(file.read, parser_options).parse.root
-      xml.children.each do |node|
-        flight = FlightStats::Flight.new(node.children[0])
-        time_updated = Time.parse(node.attributes['DateTimeRecorded'][0..18] + ' PT')
-        flight.attributes['updated_at'] = time_updated.utc
-        if block_given?
-          if block.arity == 1
-            block.call(flight)
-          elsif block.arity == 3
-            block.call(flight, file, timestamp)
-          end
-        else
-          updates << flight
-        end
+      if !block_given?
+        updates += FlightStats::DataFeed.process_file(file)
+      else
+        FlightStats::DataFeed.process_file(file, &block)
       end
     end
-    updates if block_given?
+    updates if !block_given?
   end
   alias :updates :each
+  
+  def self.process_file(file, &block)
+    update = [] if !block_given?
+    parser_options = {:options => LibXML::XML::Parser::Options::NOBLANKS}
+    xml = LibXML::XML::Parser.string(file.read, parser_options).parse.root
+    xml.children.each do |node|
+      flight = FlightStats::Flight.new(node.children[0])
+      time_updated = Time.parse(node.attributes['DateTimeRecorded'][0..18] + ' PT')
+      flight.attributes['updated_at'] = time_updated.utc
+      if block_given?
+        block.call(flight)
+      else
+        updates << flight
+      end
+    end
+    updates if !block_given?
+  end
   
   def self.updates(time=nil)
     self.new.updates
   end
-    
+
 end
