@@ -1,7 +1,9 @@
 class FlightStats::DataFeed
+
+  PARSER_OPTIONS = {:options => LibXML::XML::Parser::Options::NOBLANKS}
   
   attr_reader :last_accessed, :files
-  
+        
   def initialize(time=nil)
     @last_accessed = (time || Time.now)
     @files = []
@@ -21,52 +23,51 @@ class FlightStats::DataFeed
     end
   end
   
+  def self.get_gz_file(id)
+    id = id['id'] if id.class == Hash
+    FlightStats::raw_query({:file=>id}, '/development/feed')
+  end
+  
+  def self.get_file(id)
+    Zlib::GzipReader.new(FlightStats::DataFeed.get_gz_file(id))
+  end
+  
   # passes each file to a block,
   # each file is the raw gzipped file from flightstats, StringIO object
-  def each_gz_file
-    @files.each do |file|
-      yield( FlightStats::raw_query({:file=>file['id']}, '/development/feed'), file['timestamp'] )
+  def each_gz_file(&block)
+    if block.arity == 1
+      @files.each{ |f| block.call(FlightStats::DataFeed.get_gz_file(f)) }
+    elsif block.arity == 2
+      @files.each { |f|
+        block.call(FlightStats::DataFeed.get_gz_file(f), f['timestamp'])
+      }
     end
   end
 
   # passes each file to a block, each file is a Zlib::GzipReader instance
-  def each_file
-    each_gz_file { |gz_file, timestamp| yield( Zlib::GzipReader.new(gz_file) ) }
+  def each_file(&block)
+    if block.arity == 1
+      @files.each{ |f| block.call(FlightStats::DataFeed.get_file(f)) }
+    elsif block.arity == 2
+      @files.each { |f|
+        block.call(FlightStats::DataFeed.get_file(f), f['timestamp'])
+      }
+    end
   end
-      
+        
   # passes each update to a block, each update is an instance of FlightStats::Flight
   def each(&block)
-    updates = [] if !block_given?
-    each_file do |file, timestamp|
-      if !block_given?
-        updates += FlightStats::DataFeed.process_file(file)
-      else
-        FlightStats::DataFeed.process_file(file, &block)
-      end
-    end
-    updates if !block_given?
+    each_file { |file| FlightStats::DataFeed.process_file(file, &block) }
   end
-  alias :updates :each
   
   def self.process_file(file, &block)
-    update = [] if !block_given?
-    parser_options = {:options => LibXML::XML::Parser::Options::NOBLANKS}
-    xml = LibXML::XML::Parser.string(file.read, parser_options).parse.root
+    xml = LibXML::XML::Parser.string(file.read, PARSER_OPTIONS).parse.root
     xml.children.each do |node|
       flight = FlightStats::Flight.new(node.children[0])
       time_updated = Time.parse(node.attributes['DateTimeRecorded'][0..18] + ' PT')
       flight.attributes['updated_at'] = time_updated.utc
-      if block_given?
-        block.call(flight)
-      else
-        updates << flight
-      end
+      block.call(flight)
     end
-    updates if !block_given?
   end
   
-  def self.updates(time=nil)
-    self.new.updates
-  end
-
 end
