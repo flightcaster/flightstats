@@ -36,7 +36,13 @@ module FlightStats
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true
       http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-      StringIO.new(http.get(uri.path+'?'+uri.query).body)
+      payload = StringIO.new(http.get(uri.path+'?'+uri.query).body)
+      payload.readline
+      if payload.readline =~ /\<Error MajorCode=\"[0-9]+\" MinorCode=\"[0-9]+\"\>\<Message\>(.*)\<\/Message\>/
+        raise StandardError, $1
+      end
+      payload.rewind
+      payload
     end
     
     def parameterize(hash)

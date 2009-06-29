@@ -8,6 +8,14 @@ class DelayFeedTest < Test::Unit::TestCase
     assert_equal 2, FlightStats::DataFeed.new.files.size
   end
   
+  def test_should_throw_error
+    FakeWeb.register_uri(:get, "https://www.pathfinder-xml.com/development/feed?login.guid=test&useUTC=true&lastAccessed=#{Time.now.utc.strftime("%Y-%m-%dT%H:%M")}",
+                         :string => File.read("#{File.dirname(__FILE__)}/responses/error.xml"))
+    assert_raise StandardError do
+      FlightStats::DataFeed.new
+    end
+  end
+  
   def test_should_find_ten_updates
     FakeWeb.register_uri(:get, "https://www.pathfinder-xml.com/development/feed?login.guid=test&useUTC=true&lastAccessed=#{Time.now.utc.strftime("%Y-%m-%dT%H:%M")}",
                          :string => File.read("#{File.dirname(__FILE__)}/responses/feed_file_list.xml"))
