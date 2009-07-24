@@ -60,6 +60,8 @@ class FlightStats::Flight
       when 'FlightHistoryCodeshare' then @attributes['codeshares'] << parse_code_share(e)
       when 'Airline'
         @airline = FlightStats::Airline.new(e)
+        @attributes['airline_iata_code'] = @airline.attributes['airline_code'] if @airline.attributes['airline_code'] and @airline.attributes['airline_code'].size < 3
+        @attributes['airline_icao_code'] = @airline.attributes['airline_code'] if @airline.attributes['airline_code'] and @airline.attributes['airline_code'].size >= 3
         @attributes['airline_iata_code'] = @airline.attributes['iata_code'] if @airline.attributes['iata_code']
         @attributes['airline_icao_code'] = @airline.attributes['icao_code'] if @airline.attributes['icao_code']
       when 'Origin' then @attributes['origin_icao_code'] = e.attributes['ICAOCode']
