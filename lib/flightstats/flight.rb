@@ -1,14 +1,14 @@
 class FlightStats::Flight
   
   def initialize
-    @codeshare = []
+    @codeshares = []
   end
   
   attr_accessor :id,
                 :airline,
                 :number,
                 :tail_number,
-                :codehsares,
+                :codeshares,
 
                 :origin,
                 :destination,

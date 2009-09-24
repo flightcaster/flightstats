@@ -15,7 +15,8 @@ class FlightStats::DataFeed::File::SaxParser
     
   def on_start_element_ns(name, attributes, prefix, uri, namespaces)
     @stack.push(name)
-    
+    attributes = attributes.delete_if{ |k,v| v.strip.empty? }
+
     case name
     when 'FlightHistoryEvent'
       @update = FlightStats::DataFeed::File::FlightUpdate.new
@@ -33,6 +34,7 @@ class FlightStats::DataFeed::File::SaxParser
       @flight.status_code = attributes['StatusCode']
       @flight.creator_code = attributes['CreatorCode']
       @flight.published_local_departure_time = to_time(attributes['PublishedDepartureDate'])
+      @flight.published_local_arrival_time = to_time(attributes['PublishedArrivalDate'])
       @flight.local_arrival_time = to_time(attributes['PublishedArrivalDate'])
       @flight.scheduled_local_gate_departure_time = to_time(attributes['ScheduledGateDepartureDate'])
       @flight.estimated_local_gate_departure_time = to_time(attributes['EstimatedGateDepartureDate'])
@@ -62,24 +64,14 @@ class FlightStats::DataFeed::File::SaxParser
       @flight.arrival_gate = attributes['ArrivalGate']
       @flight.arrival_terminal = attributes['ArrivalTerminal']
       @flight.baggage_claim = attributes['BaggageClaim']
-    when 'CodeshareEntry'
+    when 'FlightHistoryCodeshare', 'CodeshareEntry'
       @codeshare = FlightStats::Flight::Codeshare.new
+      @codeshare.id = attributes['FlightHistoryCodeshareId']
       @codeshare.number = attributes['FlightNumber']
       @codeshare.tail_number = attributes['TailNumber']
       @codeshare.published_local_departure_time = to_time(attributes['PublishedDepartureDate'])
       @codeshare.published_local_arrival_time = to_time(attributes['PublishedArrivalDate'])
-      case attributes['Designator']
-      when 'S'
-        @codeshare.designator = 'Shared airline designator'
-      when 'L'
-        @codeshare.designator = 'Commercial duplicate'
-      when 'X'
-        @codeshare.designator = 'Wet lease'
-      when 'Z'
-        @codeshare.designator = 'Commercial duplicate'
-      else
-        @codeshare.designator = attributes['Designator']
-      end
+      @codeshare.designator = attributes['Designator']
     when 'Airline'
       @airline = FlightStats::Airline.new
       @airline.code = attributes['AirlineCode']
@@ -88,8 +80,26 @@ class FlightStats::DataFeed::File::SaxParser
       @airline.icao_code = attributes['ICAOCode']
       @airline.faa_code = attributes['FAACode']
     when 'Origin'
+      @origin = FlightStats::Airport.new
+      @origin.code = attributes['AirportCode']
+      @origin.iata_code = attributes['IATACode']
+      @origin.icao_code = attributes['ICAOCode']
+      @origin.faa_code = attributes['FAACode']
+      @origin.name = attributes['Name']
     when 'Destination'
+      @destination = FlightStats::Airport.new
+      @destination.code = attributes['AirportCode']
+      @destination.iata_code = attributes['IATACode']
+      @destination.icao_code = attributes['ICAOCode']
+      @destination.faa_code = attributes['FAACode']
+      @destination.name = attributes['Name']
     when 'Diverted'
+      @diverted = FlightStats::Airport.new
+      @diverted.code = attributes['AirportCode']
+      @diverted.iata_code = attributes['IATACode']
+      @diverted.icao_code = attributes['ICAOCode']
+      @diverted.faa_code = attributes['FAACode']
+      @diverted.name = attributes['Name']
     end
   end
   
@@ -103,16 +113,26 @@ class FlightStats::DataFeed::File::SaxParser
     when 'FlightHistory'
       @update.flight = @flight if @stack.last == 'FlightHistoryEvent'
       @flight = nil
-    when 'CodeshareEntry'
+    when 'FlightHistoryCodeshare', 'CodeshareEntry'
       @flight.codeshares << @codeshare if @stack.last == 'FlightHistory'
+      @codeshare = nil
     when 'Airline'
       case @stack.last
       when 'FlightHistory'
         @flight.airline = @airline
-      when 'CodeshareEntry'
+      when 'FlightHistoryCodeshare', 'CodeshareEntry'
         @codeshare.airline = @airline
       end
       @airline = nil
+    when 'Origin'
+      @flight.origin = @origin if @stack.last == 'FlightHistory'
+      @origin = nil
+    when 'Destination'
+      @flight.destination = @destination if @stack.last == 'FlightHistory'
+      @destination = nil
+    when 'Diverted'
+      @flight.diverted = @diverted if @stack.last == 'FlightHistory'
+      @diverted = nil
     end
   end
 end

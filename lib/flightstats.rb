@@ -38,6 +38,8 @@ end
 
 require 'flightstats/airline'
 
+require 'flightstats/airport'
+
 require 'flightstats/flight'
 require 'flightstats/flight/codeshare'
 
