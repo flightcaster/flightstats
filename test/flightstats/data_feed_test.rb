@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/test_helper'
+require File.dirname(__FILE__) + '/../test_helper'
 
 class DelayFeedTest < Test::Unit::TestCase
   
@@ -9,7 +9,7 @@ class DelayFeedTest < Test::Unit::TestCase
   
   def test_should_find_two_files
     FakeWeb.register_uri(:get, "https://www.pathfinder-xml.com/development/feed?login.guid=test&useUTC=true&lastAccessed=#{Time.now.utc.strftime("%Y-%m-%dT%H:%M")}",
-                         :body => File.read("#{File.dirname(__FILE__)}/responses/feed_file_list.xml"))
+                         :body => File.read("#{File.dirname(__FILE__)}/../responses/feed_file_list.xml"))
                          
     files = FlightStats::DataFeed.new.files
     assert_equal 2, files.size

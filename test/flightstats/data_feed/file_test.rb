@@ -1,14 +1,14 @@
-require File.dirname(__FILE__) + '/test_helper'
+require File.dirname(__FILE__) + '/../../test_helper'
 
 class FlightStats::DataFeed::FileTest < Test::Unit::TestCase
 
   def test_should_find_ten_updates
     FakeWeb.register_uri(:get, "https://www.pathfinder-xml.com/development/feed?login.guid=test&useUTC=true&lastAccessed=#{Time.now.utc.strftime("%Y-%m-%dT%H:%M")}",
-                         :body => File.read("#{File.dirname(__FILE__)}/responses/feed_file_list.xml"))
+                         :body => File.read("#{File.dirname(__FILE__)}/../../responses/feed_file_list.xml"))
     FakeWeb.register_uri(:get, "https://www.pathfinder-xml.com/development/feed?login.guid=test&file=4551477",
-                         :body => File.read("#{File.dirname(__FILE__)}/responses/test1.gz"))
+                         :body => File.read("#{File.dirname(__FILE__)}/../../responses/test1.gz"))
     FakeWeb.register_uri(:get, "https://www.pathfinder-xml.com/development/feed?login.guid=test&file=4551480",
-                         :body => File.read("#{File.dirname(__FILE__)}/responses/test2.gz"))
+                         :body => File.read("#{File.dirname(__FILE__)}/../../responses/test2.gz"))
 
     count = 0
     FlightStats::DataFeed.new.files do |file|
@@ -20,7 +20,7 @@ class FlightStats::DataFeed::FileTest < Test::Unit::TestCase
   end
   
   def test_should_find_5_updates_when_reading_file
-    data_file = File.new("#{File.dirname(__FILE__)}/responses/test1.gz")
+    data_file = File.new("#{File.dirname(__FILE__)}/../../responses/test1.gz")
     file = FlightStats::DataFeed::File.new(data_file)
     count = 0
     file.updates do |update|
@@ -31,11 +31,11 @@ class FlightStats::DataFeed::FileTest < Test::Unit::TestCase
 
   def test_should_check_correctness_of_data
     FakeWeb.register_uri(:get, "https://www.pathfinder-xml.com/development/feed?login.guid=test&useUTC=true&lastAccessed=#{Time.now.utc.strftime("%Y-%m-%dT%H:%M")}",
-                         :body => File.read("#{File.dirname(__FILE__)}/responses/feed_file_list.xml"))
+                         :body => File.read("#{File.dirname(__FILE__)}/../../responses/feed_file_list.xml"))
     FakeWeb.register_uri(:get, "https://www.pathfinder-xml.com/development/feed?login.guid=test&file=4551477",
-                        :body => File.read("#{File.dirname(__FILE__)}/responses/test1.gz"))
+                        :body => File.read("#{File.dirname(__FILE__)}/../../responses/test1.gz"))
     FakeWeb.register_uri(:get, "https://www.pathfinder-xml.com/development/feed?login.guid=test&file=4551480",
-                        :body => File.read("#{File.dirname(__FILE__)}/responses/test2.gz"))
+                        :body => File.read("#{File.dirname(__FILE__)}/../../responses/test2.gz"))
                       
     changes = Array.new
     FlightStats::DataFeed.new.files do |file|
