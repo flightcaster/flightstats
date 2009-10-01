@@ -11,13 +11,4 @@
 
 	require 'flightstats'
 	
-	FLIGHTSTATS_ACCOUNT_ID 	= 'my_id'
-	FLIGHTSTATS_USER_ID 	= "12345"
-	FLIGHTSTATS_PASSWORD 	= "*****"
-	
-	# Displays the flight numbers of all the arriving flights
-	boston = FlightStats.find_by_icao_code("KBOS")
-	boston.arrivals.each do |flight|
-		puts flight.number
-	end
-
+	FLIGHTSTATS_GUID 	= 'my_guid'
