@@ -47,7 +47,7 @@ class FlightStats::DataFeed::File::SaxParser
       @flight.actual_local_runway_departure_time = to_time(attributes['ActualRunwayDepartureDate'])
       @flight.scheduled_local_runway_arrival_time = to_time(attributes['ScheduledRunwayArrivalDate'])
       @flight.estimated_local_runway_arrival_time = to_time(attributes['EstimatedRunwayArrivalDate'])
-      @flight.actual_local_runway__arrival_time = to_time(attributes['ActualRunwayArrivalDate'])
+      @flight.actual_local_runway_arrival_time = to_time(attributes['ActualRunwayArrivalDate'])
       @flight.scheduled_air_time = attributes['ScheduledAirTime'].to_i if attributes['ScheduledAirTime']
       @flight.actual_air_time = attributes['ActualAirTime'].to_i if attributes['ActualAirTime']
       @flight.scheduled_block_time = attributes['ScheduledBlockTime'].to_i if attributes['ScheduledBlockTime']

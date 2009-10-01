@@ -48,7 +48,7 @@ class FlightStats::Flight
                 :actual_local_gate_arrival_time,
                 :scheduled_local_runway_arrival_time,
                 :estimated_local_runway_arrival_time,
-                :actual_local_runway__arrival_time,
+                :actual_local_runway_arrival_time,
 
 
                 :departure_airport_timezone_offset,
