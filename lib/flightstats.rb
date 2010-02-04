@@ -15,7 +15,7 @@ module FlightStats
     end
     
     def uri(params, path = nil)
-      params.merge!(authentication_token)
+      params.merge!(authentication_token){ |key,old,new| old }
       URI.parse(SERVER + (path || PATH) + '?' + params.collect{ |k,v| "#{k}=#{v}"}.join('&'))
     end
 
